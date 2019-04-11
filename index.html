@@ -9,17 +9,20 @@
     </head>
     <body>
         <h1>NBA Trivia</h1>
-
+        <hr>
         <div class="container">
             <div id="time-left"></div>
             <div id="questionBlock"></div>
             <div id="answerBlock"></div>
             <button class="btn btn-primary" id="start">Start Game</button>
-            <button class="btn btn-danger" id="reset">Play Again</button>
+            <button class="btn btn-warning" id="reset">Play Again</button>
         </div>
 
 
-
+        <audio id="tick">
+            <source src="assets/audio/ticking-timer.wav" type="audio/mpeg">
+            <source src="assets/audio/buzz.flac" type="audio/mpeg">
+        </audio>
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script type="text/javascript" src="assets/javascript/app.js"></script>

@@ -40,7 +40,7 @@ $(document).ready(function () {
         }
     ];
     
-    var timer = 20;
+    var timer = 17;
     var correctAnswers = 0;
     var wrongAnswers = 0;
     var unanswerCount = 0;
@@ -52,8 +52,11 @@ $(document).ready(function () {
     var newArr = [];
     var holder = [];
     var userGuess = "";
+    
+    // Stores my audio from the html file into this audio variable
+    var audio = $("#tick")[0];
 
-
+    // Hides reset button at the start of the game
    $("#reset").hide();
 
    // Starts the game 
@@ -66,27 +69,29 @@ $(document).ready(function () {
        }
    })
 
+   // Starts the timer and calls the decrement function
    function timeStart() {
        if (!running) {
+           interValId = setInterval(decrement, 1000);
            running = true;
-           interValId = setInterval(countDown, 1000);
-           
+           audio.play();
        }
    }
 
-   function countDown() {
+   // When the time goes down to 0 then it displays a message and goes onto the next question
+   function decrement() {
        $("#time-left").html("<h3> Time Left: " + timer + "</h3>");
        timer--;
 
        if (timer === 0) {
            unanswerCount++;
            stop();
-           $("#answerBlock").html("<p>Time is up! The correct answer is: " + computerPick.choices[computerPick.answer] + "</p>");
+           $("#answerBlock").html("<h5>Time is up! The correct answer is: " + computerPick.choices[computerPick.answer] + "</h5>");
            hidephoto();
        }
    }
 
-
+   // Stops the clock
    function stop() {
        running = false;
        clearInterval(interValId);
@@ -95,7 +100,8 @@ $(document).ready(function () {
 
    // Function that displays the question and answer choices
    function display() {
-       
+
+
         // Picks a random object from the computerOptions array. computerPick will hold the random object's info
         index = Math.floor(Math.random() * computerOptions.length);
         computerPick = computerOptions[index];
@@ -103,41 +109,48 @@ $(document).ready(function () {
         // Grabs and displays the question property from the array of objects aka computerOptions
         $("#questionBlock").html("<h2>" + computerPick.question + "</h2>");
 
-        // Loops through the question's answer choices array 
+        // Loops through the question's choices array 
         for (var i = 0; i < computerPick.choices.length; i++) {
+
+        // Creates new div and adds a classname to it
             var userPick = $("<div>");
             userPick.addClass("answerpick");
             userPick.html(computerPick.choices[i]);
 
-            // Assigns the arrays position to it so it can check the answer 
+        // Assigns the arrays position to it so it can check the answer and appends the choices 
             userPick.attr("data-guessvalue", i);
             $("#answerBlock").append(userPick);
         }
-        countDown()
-   }
-
+        
    
    // Click function to select the answer choices and the outcomes
    $(".answerpick").on("click", function() {
-        userGuess = parseInt($(this).attr("data-guessvalue"));
-        
+
+    // This is how the cmoputer knows that the user selected the right answer
+    userGuess = parseInt($(this).attr("data-guessvalue"));
+
         // Sets the conditions of the trivia game 
         if (userGuess === computerPick.answer) {
+            stop();            
             correctAnswers++;
             userGuess = "";
-            $("#answerBlock").html("<p>Correct!</p>");
-            //stop();
-            //hidepicture();
+            $("#answerBlock").html("<h5>Correct!</h5>");
+            hidephoto();
 
         } else {
-            //stop();
+            stop();
             wrongAnswers++
             userGuess = "";
-            $("#answerBlock").html("<p>Wrong! The correct answer is: " + userPick.choice[userPick.answer] + "</p>");
-            //hidepicture();
+            $("#answerBlock").html("<h5>Wrong! The correct answer is: " + computerPick.choices[computerPick.answer] + "</h5>");
+            hidephoto();
         }
+    
    })
+   }
 
+
+   // This function displays the gif/image after selecting an answer and 
+   // also keeps track of the questions answered or not and then ends the game
    function hidephoto() {
        $("#answerBlock").append("<img src=" + computerPick.photo + ">");
        newArr.push(computerPick);
@@ -145,7 +158,7 @@ $(document).ready(function () {
 
        var hidepic = setTimeout(function() {
             $("#answerBlock").empty();
-            timer = 20;
+            timer = 17;
 
         if ((wrongAnswers + correctAnswers + unanswerCount) === qCount) {
             $("#questionBlock").empty();
@@ -159,18 +172,21 @@ $(document).ready(function () {
             unanswerCount = 0;
 
         } else {
+            timeStart();
             display();
         }
-       }, 3000)
+       }, 3000) // Shows the gif for 3 seconds
    }
 
+   // Resets the game 
    $("#reset").on("click", function() {
         $("#reset").hide();
-        $("questionBlock").empty();
-        $("answerBlock").empty();
+        $("#answerBlock").empty();
+        $("#questionBlock").empty();
         for (var i = 0; i < holder.length; i++) {
             computerOptions.push(holder[i]);
         }
+        timeStart();
         display();
    })
 
